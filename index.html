@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tcalcu</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <h1>calculatrice tpt</h1>
+
+    <div class="section">
+        <h2>je renseigne ma DJS :</h2>
+        <input type="number" name="djstime" id="time_djs" placeholder="DJS en heures" min="0" step="0.01">
+    </div>
+
+    <div class="section">
+        <h2>salarié au forfait jour</h2>
+        <div class="checkbox-group">
+            <div class="checkbox-item">
+                <input type="checkbox" name="fofait_jour" id="forfait_oui">
+                <label for="forfait_oui">oui</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" name="fofait_jour" id="forfait_non">
+                <label for="forfait_non">non</label>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
