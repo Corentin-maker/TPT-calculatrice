@@ -3,38 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tcalcu</title>
+    <title>TPT-calculatrice</title>
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
-    <h1>calculatrice tpt</h1>
+    <h1>Calculatrice de TPT</h1>
 
     <div class="section">
-        <h2>je renseigne la DJS :</h2>
+        <h2>Je renseigne la DJS :</h2>
         <input type="number" name="djstime" id="time_djs" placeholder="DJS en heures" min="0" step="0.01">
     </div>
 
     <div class="section">
-        <h2>salarié au forfait jour</h2>
-        <div class="checkbox-group">
-            <div class="checkbox-item">
-                <input type="checkbox" name="fofait_jour" id="forfait_oui">
-                <label for="forfait_oui">oui</label>
+        <h2>Salarié au forfait jour</h2>
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" name="forfait_jour" id="forfait_oui" value="oui">
+                <label for="forfait_oui">Oui</label>
             </div>
-            <div class="checkbox-item">
-                <input type="checkbox" name="fofait_jour" id="forfait_non">
-                <label for="forfait_non">non</label>
+            <div class="radio-item">
+                <input type="radio" name="forfait_jour" id="forfait_non" value="non">
+                <label for="forfait_non">Non</label>
             </div>
         </div>
-
     </div>
 
     <div class="section">
         <h2>% De TPT</h2>
+        <div class="description">
+            <p>Je renseigne le pourcentage du temps partiel thérapeutique</p>
+        </div>
+        <input type="number" name="tpt" id="tpt_percentage" placeholder="%" min="0" max="100" step="1">
+    </div>
 
+    <div class="section">
+        <h2>Durée du TPT prescrit</h2>
+        <input type="date" name="start_date" id="start_date">
+        <label for="start_date">Date de début</label>
+
+        <input type="date" name="end_date" id="end_date">
+        <label for="end_date">Date de fin</label>
+    </div>
+
+    <div class="section">
+        <h2>Prolongation du TPT</h2>
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" name="prolon" id="prolon_oui" value="oui">
+                <label for="prolon_oui">Oui</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" name="prolon" id="prolon_non" value="non">
+                <label for="prolon_non">Non</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Répartition du TPT</h2>
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" name="repar" id="repart_demi" value="demi_journee">
+                <label for="repart_demi">Demi-journée</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" name="repar" id="repart_journ" value="journee">
+                <label for="repart_journ">Journée</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" name="repar" id="repart_horaire" value="horaire">
+                <label for="repart_horaire">Horaire</label>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-</html> 
+</html>
