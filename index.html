@@ -10,11 +10,6 @@
     <h1>Calculatrice de TPT</h1>
 
     <div class="section">
-        <h2>Je renseigne la DJS :</h2>
-        <input type="number" name="djstime" id="time_djs" placeholder="DJS en heures" min="0" step="0.01">
-    </div>
-
-    <div class="section">
         <h2>Salarié au forfait jour</h2>
         <div class="radio-group">
             <div class="radio-item">
@@ -27,6 +22,17 @@
             </div>
         </div>
     </div>
+    
+    <div class="section">
+        <h2>Je renseigne la DJS :</h2>
+
+        <div class="description">
+            <p>La DJS est exprimée en centième (exemple : 7h25 = 7.42)</p>
+        </div>
+
+        <input type="number" name="djstime" id="time_djs" placeholder="DJS en centième" min="0" step="0.01">
+    </div>
+
 
     <div class="section">
         <h2>% De TPT</h2>
@@ -34,29 +40,6 @@
             <p>Je renseigne le pourcentage du temps partiel thérapeutique</p>
         </div>
         <input type="number" name="tpt" id="tpt_percentage" placeholder="%" min="0" max="100" step="1">
-    </div>
-
-    <div class="section">
-        <h2>Durée du TPT prescrit</h2>
-        <input type="date" name="start_date" id="start_date">
-        <label for="start_date">Date de début</label>
-
-        <input type="date" name="end_date" id="end_date">
-        <label for="end_date">Date de fin</label>
-    </div>
-
-    <div class="section">
-        <h2>Prolongation du TPT</h2>
-        <div class="radio-group">
-            <div class="radio-item">
-                <input type="radio" name="prolon" id="prolon_oui" value="oui">
-                <label for="prolon_oui">Oui</label>
-            </div>
-            <div class="radio-item">
-                <input type="radio" name="prolon" id="prolon_non" value="non">
-                <label for="prolon_non">Non</label>
-            </div>
-        </div>
     </div>
 
     <div class="section">
@@ -77,6 +60,108 @@
         </div>
     </div>
 
+    <div class="section">
+        <h2>Sur une ou deux semaines</h2>
+        <div class="radio-group">
+            <div class="radio-item">
+                <input type="radio" name="semaines" id="semaine_1" value="1_semaine">
+                <label for="semaine_1">1 semaine</label>
+            </div>
+            <div class="radio-item">
+                <input type="radio" name="semaines" id="semaine_2" value="2_semaines">
+                <label for="semaine_2">2 semaines</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="absences-section">
+        <h2>Absences (cochez les jours d'absence)</h2>
+        <div id="absences-checkboxes">
+            <label><input type="checkbox" class="absence-1" value="lundi"> Lundi (S1)</label>
+            <label><input type="checkbox" class="absence-1" value="mardi"> Mardi (S1)</label>
+            <label><input type="checkbox" class="absence-1" value="mercredi"> Mercredi (S1)</label>
+            <label><input type="checkbox" class="absence-1" value="jeudi"> Jeudi (S1)</label>
+            <label><input type="checkbox" class="absence-1" value="vendredi"> Vendredi (S1)</label>
+        </div>
+        <div id="absences-checkboxes-2" style="display:none; margin-top:10px;">
+            <label><input type="checkbox" class="absence-2" value="lundi"> Lundi (S2)</label>
+            <label><input type="checkbox" class="absence-2" value="mardi"> Mardi (S2)</label>
+            <label><input type="checkbox" class="absence-2" value="mercredi"> Mercredi (S2)</label>
+            <label><input type="checkbox" class="absence-2" value="jeudi"> Jeudi (S2)</label>
+            <label><input type="checkbox" class="absence-2" value="vendredi"> Vendredi (S2)</label>
+        </div>
+    </div>
+
+    <div class="section" id="jours-non-travailles-section" style="display:none;">
+        <h2>Choisissez les jours non travaillés</h2>
+        <div id="compteur-non-travailles" style="font-weight:bold; color:#0078d4; margin-bottom:8px;"></div>
+        <div id="jours-non-travailles-checkboxes">
+            <label><input type="checkbox" class="jour-non-travaille" value="lundi"> Lundi</label>
+            <label><input type="checkbox" class="jour-non-travaille" value="mardi"> Mardi</label>
+            <label><input type="checkbox" class="jour-non-travaille" value="mercredi"> Mercredi</label>
+            <label><input type="checkbox" class="jour-non-travaille" value="jeudi"> Jeudi</label>
+            <label><input type="checkbox" class="jour-non-travaille" value="vendredi"> Vendredi</label>
+        </div>
+        <div id="jours-non-travailles-checkboxes-2" style="display:none; margin-top:10px;">
+            <label><input type="checkbox" class="jour-non-travaille-2" value="lundi"> Lundi (S2)</label>
+            <label><input type="checkbox" class="jour-non-travaille-2" value="mardi"> Mardi (S2)</label>
+            <label><input type="checkbox" class="jour-non-travaille-2" value="mercredi"> Mercredi (S2)</label>
+            <label><input type="checkbox" class="jour-non-travaille-2" value="jeudi"> Jeudi (S2)</label>
+            <label><input type="checkbox" class="jour-non-travaille-2" value="vendredi"> Vendredi (S2)</label>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Planning de la semaine 1</h2>
+        <div id="planning-section-1">
+            <table id="planning-table-1" border="1" style="width:100%; text-align:center;">
+                <thead>
+                    <tr>
+                        <th>Lundi</th>
+                        <th>Mardi</th>
+                        <th>Mercredi</th>
+                        <th>Jeudi</th>
+                        <th>Vendredi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="result1-lundi"></td>
+                        <td id="result1-mardi"></td>
+                        <td id="result1-mercredi"></td>
+                        <td id="result1-jeudi"></td>
+                        <td id="result1-vendredi"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section" id="section-semaine-2" style="display:none;">
+        <h2>Planning de la semaine 2</h2>
+        <div id="planning-section-2">
+            <table id="planning-table-2" border="1" style="width:100%; text-align:center;">
+                <thead>
+                    <tr>
+                        <th>Lundi</th>
+                        <th>Mardi</th>
+                        <th>Mercredi</th>
+                        <th>Jeudi</th>
+                        <th>Vendredi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="result2-lundi"></td>
+                        <td id="result2-mardi"></td>
+                        <td id="result2-mercredi"></td>
+                        <td id="result2-jeudi"></td>
+                        <td id="result2-vendredi"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
-</html>
