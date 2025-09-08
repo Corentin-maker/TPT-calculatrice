@@ -1,22 +1,11 @@
-// Sélection des cases à cocher
-const forfaitOui = document.getElementById('forfait_oui');
-const forfaitNon = document.getElementById('forfait_non');
+const tptInput = document.getElementById("tpt_percentage");
 
-// Fonction pour gérer l'exclusivité des cases
-function handleCheckboxChange(event) {
-    const clickedCheckbox = event.target;
-    
-    // Si on coche "oui", on décoche "non"
-    if (clickedCheckbox === forfaitOui && clickedCheckbox.checked) {
-        forfaitNon.checked = false;
-    }
-    
-    // Si on coche "non", on décoche "oui"
-    if (clickedCheckbox === forfaitNon && clickedCheckbox.checked) {
-        forfaitOui.checked = false;
-    }
-}
+tptInput.addEventListener("input", () => {
+    let value = parseInt(tptInput.value, 10);
 
-// Ajout des événements sur les deux cases
-forfaitOui.addEventListener('change', handleCheckboxChange);
-forfaitNon.addEventListener('change', handleCheckboxChange);
+    if (value < 1) {
+        tptInput.value = 1;
+    } else if (value > 100) {
+        tptInput.value = 100;
+    }
+});
