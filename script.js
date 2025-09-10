@@ -1,3 +1,21 @@
+// Convertit un nombre décimal de jours en format "Xj Yh Zm" où 1 jour = DJS (en heures et minutes)
+function joursToJHM(joursDecimaux) {
+    const djsValue = parseFloat(djsInput.value);
+    if (isNaN(djsValue) || djsValue <= 0) return `${joursDecimaux.toFixed(2)}j`;
+    // DJS en centièmes d'heure (ex : 7.42)
+    // On convertit la DJS en heures et minutes
+    const djsHeures = Math.floor(djsValue);
+    const djsMinutes = Math.round((djsValue - djsHeures) * 60);
+    // Total minutes pour 1 jour
+    const djsTotalMinutes = djsHeures * 60 + djsMinutes;
+    // Conversion
+    const jours = Math.floor(joursDecimaux);
+    const resteJours = joursDecimaux - jours;
+    let totalMinutes = Math.round(resteJours * djsTotalMinutes);
+    let heures = Math.floor(totalMinutes / 60);
+    let minutes = totalMinutes % 60;
+    return `${jours}j ${heures}h ${minutes}m (1j = ${djsHeures}h${djsMinutes > 0 ? ' ' + djsMinutes + 'm' : ''})`;
+}
 
 // Remplit les plannings avec la DJS * %TPT
 const djsInput = document.getElementById("time_djs");
@@ -20,11 +38,22 @@ const reparJourn = document.getElementById("repart_journ");
 
 
 
-function updateCompteurNonTravailles(quotaNonTravailles) {
+function updateCompteurNonTravailles() {
     const compteur = document.getElementById('compteur-non-travailles');
-    if (!compteur || isNaN(quotaNonTravailles)) {
-        if (compteur) compteur.textContent = '';
-        return;
+    const tptValue = parseFloat(tptInput.value);
+    let nbJoursOuvres = 5;
+    if (semaine2Radio && semaine2Radio.checked) nbJoursOuvres = 10;
+    // Compter le nombre de jours d'absence
+    let nbAbsences = 0;
+    absences1.forEach(cb => { if (cb.checked) nbAbsences++; });
+    if (semaine2Radio && semaine2Radio.checked) {
+        absences2.forEach(cb => { if (cb.checked) nbAbsences++; });
+    }
+    // Calcul du quota exact :
+    // TPT = taux de temps travaillé, donc jours non travaillés = (jours ouvrés - absences) * (1 - TPT/100)
+    let quotaNonTravailles = 0;
+    if (!isNaN(tptValue)) {
+        quotaNonTravailles = (nbJoursOuvres - nbAbsences) * (1 - tptValue / 100);
     }
     // Compter le nombre de jours non travaillés déjà cochés (hors absences)
     let nbCoches = 0;
@@ -44,12 +73,21 @@ function updateCompteurNonTravailles(quotaNonTravailles) {
     }
     let restant = quotaNonTravailles - nbCoches;
     if (restant < 0) restant = 0;
-    compteur.textContent = `Jours non travaillés restants à positionner : ${restant}`;
+    // Affichage du quota restant en format décimal ET en format jours/heures/minutes
+    if (compteur && !isNaN(quotaNonTravailles)) {
+        // Affichage décimal
+        let txt = `Jours non travaillés restants à positionner : ${restant.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        // Conversion en format 1j 3h 2m
+        // On affiche la conversion uniquement si le quota restant est positif
+        if (restant > 0) {
+            txt += `  |  soit : ${joursToJHM(restant)}`;
+        }
+        compteur.textContent = txt;
+    } else if (compteur) {
+        compteur.textContent = '';
+    }
 
     // Sécurisation stricte :
-    // 1. On compte le nombre de cases cochées (hors absences)
-    // 2. Si quota atteint, on bloque toutes les cases non cochées (hors absences)
-    // 3. Si quota non atteint, toutes les cases non cochées sont activées
     let nbCochesCourant = 0;
     allCheckboxes.forEach((cb, i) => {
         if (cb.checked && !(allAbsences[i] && allAbsences[i].checked)) nbCochesCourant++;
@@ -112,9 +150,43 @@ function remplirPlanningsAvecTPT() {
         warn.textContent = '';
     }
     // Mettre à jour le compteur
-    updateCompteurNonTravailles(isJournee ? quotaNonTravailles : '');
+    updateCompteurNonTravailles();
     // Remplissage du planning
     if (!isNaN(djsValue)) {
+        // On calcule le quota de jours non travaillés (décimal)
+        const tptValue = parseFloat(tptInput.value);
+        let nbJoursOuvres = 5;
+        if (semaine2Radio && semaine2Radio.checked) nbJoursOuvres = 10;
+        let nbAbsences = 0;
+        absences1.forEach(cb => { if (cb.checked) nbAbsences++; });
+        if (semaine2Radio && semaine2Radio.checked) {
+            absences2.forEach(cb => { if (cb.checked) nbAbsences++; });
+        }
+        let quotaNonTravailles = 0;
+        if (!isNaN(tptValue)) {
+            quotaNonTravailles = (nbJoursOuvres - nbAbsences) * (1 - tptValue / 100);
+        }
+        // On repère les cases à 0 (jours non travaillés)
+        let indicesNonTravailles = [];
+        checkboxes1.forEach((cb, i) => {
+            if (cb.checked && !(absences1[i] && absences1[i].checked)) indicesNonTravailles.push({semaine:1, idx:i});
+        });
+        if (semaine2Radio && semaine2Radio.checked) {
+            checkboxes2.forEach((cb, i) => {
+                if (cb.checked && !(absences2[i] && absences2[i].checked)) indicesNonTravailles.push({semaine:2, idx:i});
+            });
+        }
+        // On détermine la partie entière et la partie décimale du quota
+        const quotaEntier = Math.floor(quotaNonTravailles);
+        const quotaReste = quotaNonTravailles - quotaEntier;
+        // Conversion DJS en minutes
+        const djsHeures = Math.floor(djsValue);
+        const djsMinutes = Math.round((djsValue - djsHeures) * 60);
+        const djsTotalMinutes = djsHeures * 60 + djsMinutes;
+        // Temps restant à travailler sur la dernière journée non travaillée
+        const resteMinutes = Math.round(djsTotalMinutes * (1 - quotaReste));
+        const resteHeures = Math.floor(resteMinutes / 60);
+        const resteMins = resteMinutes % 60;
         // Semaine 1
         jours.forEach((jour, i) => {
             const cell1 = document.getElementById(`result1-${jour}`);
@@ -122,11 +194,16 @@ function remplirPlanningsAvecTPT() {
                 if (absences1[i] && absences1[i].checked) {
                     cell1.textContent = "0";
                 } else if (isJournee && checkboxes1[i] && checkboxes1[i].checked) {
-                    cell1.textContent = "0";
-                } else if (isJournee) {
-                    cell1.textContent = djsValue.toFixed(2);
-                } else if (!isNaN(tptValue)) {
-                    cell1.textContent = (djsValue * tptValue / 100).toFixed(2);
+                    // Si c'est la dernière case à 0 à positionner et qu'il y a une fraction
+                    let isLast = false;
+                    if (indicesNonTravailles.length > 0 && indicesNonTravailles[indicesNonTravailles.length-1].semaine === 1 && indicesNonTravailles[indicesNonTravailles.length-1].idx === i && quotaReste > 0) {
+                        isLast = true;
+                    }
+                    if (isLast) {
+                        cell1.textContent = `${resteHeures}h${resteMins > 0 ? ' ' + resteMins + 'm' : ''}`;
+                    } else {
+                        cell1.textContent = "0";
+                    }
                 } else {
                     cell1.textContent = djsValue.toFixed(2);
                 }
@@ -140,11 +217,15 @@ function remplirPlanningsAvecTPT() {
                     if (absences2[i] && absences2[i].checked) {
                         cell2.textContent = "0";
                     } else if (isJournee && checkboxes2[i] && checkboxes2[i].checked) {
-                        cell2.textContent = "0";
-                    } else if (isJournee) {
-                        cell2.textContent = djsValue.toFixed(2);
-                    } else if (!isNaN(tptValue)) {
-                        cell2.textContent = (djsValue * tptValue / 100).toFixed(2);
+                        let isLast = false;
+                        if (indicesNonTravailles.length > 0 && indicesNonTravailles[indicesNonTravailles.length-1].semaine === 2 && indicesNonTravailles[indicesNonTravailles.length-1].idx === i && quotaReste > 0) {
+                            isLast = true;
+                        }
+                        if (isLast) {
+                            cell2.textContent = `${resteHeures}h${resteMins > 0 ? ' ' + resteMins + 'm' : ''}`;
+                        } else {
+                            cell2.textContent = "0";
+                        }
                     } else {
                         cell2.textContent = djsValue.toFixed(2);
                     }
